@@ -1,0 +1,9 @@
+{
+    "Input": {
+      "Func": "s3://mybucket/cloudpickel",
+      "Data": ["s3://mybucket/cloudpickel"]
+    },
+    "Output":{
+
+    }
+  }
