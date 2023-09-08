@@ -20,8 +20,8 @@ setup(
         'pytest', 'numpy',
     ],
     entry_points={
-        'console_scripts': ['echos-setup=echos.scripts.setupinfra:setup_infra',
-                            'echos-cleanup=echos.scripts.cleanupinfra:cleanup_infra']},
+        'console_scripts': ['echos-setup=echos.scripts.setup:setup_infra',
+                            'echos-cleanup=echos.scripts.cleanup:cleanup_infra']},
     package_data={
         'echos': ['aws_config.yaml']},
     include_package_data=True

@@ -1,0 +1,27 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: 'AWS::Serverless-2016-10-31'
+
+Description: Echos Executor Template.
+
+Resources:
+  EchosExecutor:
+    Type: 'AWS::Serverless::Function'
+    Properties:
+      FunctionName: LAMBDA_NAME
+      Handler: src/app.lambda_handler
+      Runtime: python3.8
+      CodeUri: .
+      Description: Echos Executor Template.
+      MemorySize: 256
+      Timeout: 30
+      Policies:
+        - Version: '2012-10-17'
+          Statement:
+            - Effect: Allow
+              Action:
+                - 's3:ListBucket'
+                - 's3:GetObject'
+                - 's3:PutObject'
+                - 's3:DeleteObject'
+                - 's3:*MultipartUpload*'
+              Resource: BUCKET_ARN

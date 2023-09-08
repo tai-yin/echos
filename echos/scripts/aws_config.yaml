@@ -1,0 +1,4 @@
+AWSProfile: AWS_PROFILE_NAME
+S3BucketName: Echos_Bucket_Name
+S3BucketRegion: S3_BUCKET_REGION
+LambdaName: Echos_Lambda_Name
