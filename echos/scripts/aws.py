@@ -1,4 +1,5 @@
 import boto3
+from botocore.exceptions import ClientError
 from samcli.cli.main import cli
 from samcli.cli.context import Context
 import functools
@@ -82,11 +83,11 @@ def create_session(profile_name):
 @update_status(msg="Creating S3 bucket")
 def create_s3_bucket(session, bucket_name, bucket_region):
     client = session.client('s3')
-    client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={
-        'LocationConstraint': bucket_region})
-    response = client.head_bucket(Bucket=bucket_name)
-    if response['ResponseMetadata']['HTTPStatusCode'] == 409:
-        raise Exception(f"S3 bucket {bucket_name} already exists")
+    try:
+        response = client.create_bucket(Bucket=bucket_name, CreateBucketConfiguration={
+            'LocationConstraint': bucket_region})
+    except ClientError as e:
+        raise e
 
 @update_status(msg="Deleting S3 bucket")
 def delete_s3_bucket(session, bucket_name):
@@ -111,9 +112,15 @@ def setup():
         }
     
     session = create_session(CONFIG["AWSProfile"])
-    create_s3_bucket(session, CONFIG["S3BucketName"], CONFIG["S3BucketRegion"])
-    
-    Popen(["sam", "build"], stdout=sys.stdout, stderr=sys.stderr)
+    # create_s3_bucket(session, CONFIG["S3BucketName"], CONFIG["S3BucketRegion"])
     
     dump_config()
     dump_samcli_template()
+    
+    build_process = Popen(["sam", "build", "--template-file", "echos-template.yaml", "--base-dir", "echos-src","--build-dir", "echos-build"], stdout=sys.stdout, stderr=sys.stderr)
+    build_process.wait()
+    
+    package_process = Popen(["sam", "package", "--template-file", "echos-build/template.yaml", "--s3-bucket", CONFIG["S3BucketName"], "--s3-prefix", "lambda", "--output-template-file", "echos-packaged.yaml"], stdout=sys.stdout, stderr=sys.stderr)
+    package_process.wait()
+
+    sys.exit(0)
